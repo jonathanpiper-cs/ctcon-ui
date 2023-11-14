@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 
 const CTCon = dynamic(() => import("./CTCon").then((mod) => mod.default), { ssr: false });
 
-const CTConPage = async () => {
+const CTConPage = () => {
   return (
     <Suspense>
       <CTCon />
