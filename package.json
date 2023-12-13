@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@contentstack/app-sdk": "^2.0.0",
+    "@contentstack/venus-components": "^2.2.0",
     "@types/crypto-js": "^4.2.1",
     "crypto-js": "^4.2.0",
     "dotenv": "^16.3.1",
