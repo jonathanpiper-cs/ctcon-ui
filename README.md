@@ -1,36 +1,17 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## CTCon UI
+A Contentstack app with a Full Page UI Location for managing cross-stack content types.
 
-## Getting Started
+Expectation: 
+In a multistack approach, the same app/extension will be installed in multiple stacks. When keeping content types in sync, it's necessary to change the app/extension uids in the content type schemas to ensure that the fields point to the app/extension installation in the target stack(s).
 
-First, run the development server:
+This tool requires management access to each stack (source and targets). This can be established in several ways. This implementation uses OAuth to authenticate, which provides security and mitigates the need to authenticate manually against each stack.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Usage:
+Install the app [as outlined here](https://www.contentstack.com/docs/developers/developer-hub/creating-an-app-in-developer-hub). Create a Full Page UI Location that points to the /ctcon path in this project.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The tool first gets all content types AND global fields from the stack that use apps/extensions, along with a list of apps/extensions installed in the stack. Addressing a significant limitation from the cli tool, this implementation stringifies the schema to search for any instance of "extension_uid" regardless of nesting in groups or modular blocks. Once a content type or global field is selected, the UI will indicate which apps/extensions are used.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The tool fetches a list of stacks that also have the CTCon app installed. This isn't necessary at all, but implemented primarily as a convenience in a crowded stack environment. The tool could simply get all stacks in the organization. It then presents a series of buttons that allow the user to download JSON files representing the schema of the selected content type/global field with the app/extension uids replaced. These JSON files can then be imported into the target stack in the Contentstack UI.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Limitations:
+This tool doesn't automatically update the content type/global field in the target stack. That would be a huge effiency win. The code also needs some refactoring for better legibility and possibly UI improvements.
