@@ -71,7 +71,7 @@ const ContentTypeList = (props: any) => {
             setCurrentStackExtensions(req.extensions);
         };
         getExtensions();
-    }, []);
+    }, [headers, setCurrentStackExtensions, stack]);
 
     return (
         <div className="mt-2a">

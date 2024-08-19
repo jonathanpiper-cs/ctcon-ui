@@ -46,7 +46,7 @@ const CTCon = () => {
 		const getSDK = async () => {
 			ContentstackAppSDK.init().then((appSDK) => {
 				setAppSdk(appSDK)
-				const loc = appSdk?.location.FullPage
+				const loc = appSDK?.location.FullPage
 				loc && setLocation(loc)
 				setStack(appSDK.stack._data.api_key)
 				setCurrentUser(appSDK.currentUser)
@@ -95,7 +95,7 @@ const CTCon = () => {
 		}
 		window.addEventListener("message", receiveAuthToken)
 		return () => window.removeEventListener("message", receiveAuthToken)
-	}, [])
+	}, [CLIENT_ID, REDIRECT_URL])
 
 	const auth = async () => {
 		setAuthenticating(true)

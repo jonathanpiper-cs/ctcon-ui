@@ -56,7 +56,7 @@ const CTConInterface = (props: any) => {
 				})
 			setCurrentSchemaExtensions(ctExt)
 		}
-	}, [activeSchema])
+	}, [activeSchema, extensionsBySchema, currentStackExtensions])
 
 	const ErrorModal = (props: any) => {
 		return (
