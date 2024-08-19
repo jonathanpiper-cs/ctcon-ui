@@ -19,7 +19,8 @@ const ContentTypeList = (props: any) => {
 
     const findSchemasWithExtensions = async (arrayOfSchemas: any[]) => {
         let exByType: Record<string, string[]>[] = [];
-        const arr = arrayOfSchemas.filter((c: any) => {
+        // const arr = arrayOfSchemas.filter((c: any) => { // This will filter for any schemas using extensions
+        const arr = arrayOfSchemas.map((c: any) => { // This will return all schemas, regardless of extension
             let ctString = JSON.stringify(c);
             let startIndex = 0,
                 index,
@@ -31,7 +32,8 @@ const ContentTypeList = (props: any) => {
                 if (extensionsUsed.indexOf(extensionUid) === -1) extensionsUsed.push(extensionUid);
             }
             if (extensionsUsed.length > 0) exByType.push({ uid: c.uid, extensionsUsed: extensionsUsed });
-            return extensionsUsed.length > 0;
+            // return extensionsUsed.length > 0; // This will return a schema using an extension
+            return c // This will return the schema
         });
         return { arr, exByType };
     };
