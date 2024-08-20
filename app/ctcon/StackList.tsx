@@ -16,7 +16,6 @@ type AuthTokens = {
 const StackList = (props: any) => {
 	const { stack, appSdk, headers, stackList, setStackList, transformCT, activeSchema } = props
 	// const [extensionsByStack, setExtensionsByStack] = useState<any>();
-	console.log(headers)
 
 	const getStacks = async () => {
 		setStackList(null)

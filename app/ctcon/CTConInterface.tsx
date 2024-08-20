@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react"
 import StackList from "./StackList"
 import ContentTypeList from "./ContentTypeList"
-import { Button, Heading, cbModal, ModalBody, ModalFooter, ModalHeader } from "@contentstack/venus-components"
+import { Button, Heading, cbModal, ModalBody, ModalFooter, ModalHeader, Paragraph } from "@contentstack/venus-components"
 
 const EXTTYPES: Record<string, string> = {
 	field: "Custom Field",
@@ -30,7 +30,6 @@ const CTConInterface = (props: any) => {
 		authorization: `Bearer ${authTokens.accessToken}`,
 		organization_uid: appSdk.currentUser.org_uid[0] || appSdk.currentUser.organizations[0].uid || "",
 	}
-	console.log(appSdk.currentUser)
 
 	const changeTargetStackList = async (event: any, key: string) => {
 		const checked = event?.target?.checked || false
@@ -45,18 +44,21 @@ const CTConInterface = (props: any) => {
 
 	useEffect(() => {
 		if (extensionsBySchema.length > 0) {
-			const ctExt = extensionsBySchema
-				.filter((e) => {
-					return e.uid === activeSchema.uid
-				})[0]
-				?.extensionsUsed.map((e: any, key: number) => {
+			let ctExt: Record<string, string[]> = extensionsBySchema.filter((e) => {
+				return e.uid === activeSchema.uid
+			})[0]
+            console.log(activeSchema, ctExt)
+			if (ctExt) {
+				let extTmp = ctExt.extensionsUsed.map((e: any, key: number) => {
 					return currentStackExtensions.filter((cse: any) => {
 						return cse.uid === e
 					})[0]
 				})
+                ctExt = ((extTmp as unknown) as Record<string, string[]>)
+			}
 			setCurrentSchemaExtensions(ctExt)
 		}
-	}, [activeSchema, extensionsBySchema, currentStackExtensions])
+	}, [activeSchema])
 
 	const ErrorModal = (props: any) => {
 		return (
@@ -91,7 +93,7 @@ const CTConInterface = (props: any) => {
 				let targetStack = stackList.filter((s: any) => {
 					return s.api_key === key
 				})[0]
-                console.log(targetStack)
+				console.log(targetStack)
 				let targetStackExt = targetStack.extensions.filter((e: any) => {
 					return e.title === cte.title
 				})[0]
@@ -124,7 +126,7 @@ const CTConInterface = (props: any) => {
 			link.download = file.name
 			document.body.appendChild(link)
 			link.click()
-
+			console.log(ctTemp)
 			document.body.removeChild(link)
 			window.URL.revokeObjectURL(url)
 		}
@@ -171,7 +173,7 @@ const CTConInterface = (props: any) => {
 									{currentSchemaExtensions.map((extVerbose: any, key: number) => {
 										return extVerbose ? (
 											<li className="ml-2" key={key}>
-												{extVerbose.title} ({EXTTYPES[extVerbose.type]})
+												<Paragraph text={`${extVerbose.title} (${EXTTYPES[extVerbose.type]})`} />
 											</li>
 										) : (
 											<li className="ml-2">Could not retrieve extension/app information. Please check the schema definition.</li>

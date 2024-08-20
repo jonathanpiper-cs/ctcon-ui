@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Checkbox, Heading, Radio } from "@contentstack/venus-components";
+import { Button, Radio } from "@contentstack/venus-components";
 import React, { useEffect, useState } from "react";
 
 const EXTTYPES: Record<string, string> = {
@@ -55,7 +55,6 @@ const ContentTypeList = (props: any) => {
         const actCT = schemas.filter((ct: any) => {
             return ct.uid === key;
         })[0];
-        console.log(actCT);
         setActiveSchema(actCT);
     };
 
@@ -75,7 +74,7 @@ const ContentTypeList = (props: any) => {
 
     return (
         <div className="mt-2a">
-            <p className="mb-2">Get a list of all content types and global fields in this current stack that include extensions and/or apps.</p>
+            <p className="mb-2">Get a list of all content types and global fields in this current stack.</p>
             <Button onClick={getAllContentTypes}>Fetch Schemas</Button>
             {schemas.length !== 0 ? (
                 <div>
