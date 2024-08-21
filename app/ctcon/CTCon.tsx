@@ -13,11 +13,13 @@ let pkceChallengeCode = pkceChallenge()
 const code_verifier = pkceChallengeCode.code_verifier
 import { User } from "@contentstack/app-sdk/dist/src/types/user.types"
 
+// Type definition for AuthTokens
 type AuthTokens = {
 	accessToken?: string
 	refreshToken?: string
 }
 
+// Required for OAuth
 export const getUrlEncodedFormData = (params: Record<string, string>) => {
 	const formBody: any[] = []
 	for (const property in params) {
@@ -58,8 +60,8 @@ const CTCon = () => {
 		})
 	}, [])
 
+    // Get basic information about the user.
     useEffect(() => {
-		console.log("user?")
 		if (currentUser) {
 			if (currentUser.is_owner) {
 				setCurrentStackRoles(["Owner"])
@@ -69,6 +71,7 @@ const CTCon = () => {
 		}
 	}, [currentUser, stack])
 
+    // Set listener for OAuth actions.
 	useEffect(() => {
 		const receiveAuthToken = async (event: MessageEvent) => {
 			if (!has(event?.data, "location")) {
@@ -97,6 +100,7 @@ const CTCon = () => {
 		return () => window.removeEventListener("message", receiveAuthToken)
 	}, [CLIENT_ID, REDIRECT_URL])
 
+    // Authenticate via OAuth. This will open a new window to authenticate.
 	const auth = async () => {
 		setAuthenticating(true)
 		const url = `${AUTH_URL}/apps/${APP_ID}/authorize?response_type=code&client_id=${CLIENT_ID}&&auto_select_organizationredirect_uri=http://localhost${REDIRECT_URL}&code_challenge_method=plain&code_challenge=${code_verifier}`

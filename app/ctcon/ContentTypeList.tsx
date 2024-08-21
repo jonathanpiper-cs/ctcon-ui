@@ -17,6 +17,7 @@ type VerboseExtension = {
 const ContentTypeList = (props: any) => {
     const { stack, appSdk, setActiveSchema, setExtensionsBySchema, schemas, setSchemas, setCurrentStackExtensions, headers } = props;
 
+    // This function originally found only schemas with extensions. Now finds all schemas but still looks for extensions.
     const findSchemasWithExtensions = async (arrayOfSchemas: any[]) => {
         let exByType: Record<string, string[]>[] = [];
         // const arr = arrayOfSchemas.filter((c: any) => { // This will filter for any schemas using extensions
@@ -38,6 +39,7 @@ const ContentTypeList = (props: any) => {
         return { arr, exByType };
     };
 
+    // Gets all content types and global fields.
     const getAllContentTypes = async () => {
         let modHeaders = { ...headers, api_key: stack };
         let ct = await appSdk.stack.getContentTypes({});

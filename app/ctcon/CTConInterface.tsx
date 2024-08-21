@@ -58,6 +58,7 @@ const CTConInterface = (props: any) => {
 			}
 			setCurrentSchemaExtensions(ctExt)
 		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [activeSchema])
 
 	const ErrorModal = (props: any) => {
@@ -88,6 +89,7 @@ const CTConInterface = (props: any) => {
 			schema: activeSchema.schema,
 		})
 		console.log(currentSchemaExtensions)
+        // Execute this if extensions are found in the target stack.
 		if (currentSchemaExtensions) {
 			currentSchemaExtensions.forEach((cte: any) => {
 				let targetStack = stackList.filter((s: any) => {
@@ -97,11 +99,12 @@ const CTConInterface = (props: any) => {
 				let targetStackExt = targetStack.extensions.filter((e: any) => {
 					return e.title === cte.title
 				})[0]
-				if (!targetStackExt) {
-					openErrorModal({}, `No matching extensions on stack ${targetStack.name}.`)
-					return
-				}
-				ctTemp = ctTemp.replaceAll(cte.uid, targetStackExt.uid)
+                // This logic is used only when we need to present an error related to missing extensions.
+				// if (!targetStackExt) {
+				// 	openErrorModal({}, `No matching extensions on stack ${targetStack.name}.`)
+				// 	return
+				// }
+				if (targetStackExt) ctTemp = ctTemp.replaceAll(cte.uid, targetStackExt.uid)
 				const file = new File([new Blob([ctTemp])], `${targetStack.name} - ${activeSchema.title}.json`)
 				const link = document.createElement("a")
 				const url = URL.createObjectURL(file)
@@ -114,6 +117,7 @@ const CTConInterface = (props: any) => {
 				document.body.removeChild(link)
 				window.URL.revokeObjectURL(url)
 			})
+        // Or this if there are no extensions in the target stack. 
 		} else {
 			let targetStack = stackList.filter((s: any) => {
 				return s.api_key === key

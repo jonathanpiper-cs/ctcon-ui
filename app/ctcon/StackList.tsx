@@ -38,9 +38,9 @@ const StackList = (props: any) => {
 					return { ...filterReq[0], ...s, extensions: req.extensions }
 				})
 			)
-			// console.log(stacks)
 			// stacksInOrg = stacks
 		}
+        // This originally only looked for stacks that also have this app installed - might not be necessary.
 		// let stacksWithApp = stacksInOrg
 		// 	.filter((s) => {
 		// 		return s.app_installation_uid
