@@ -58,39 +58,18 @@ const CTCon = () => {
 
 	// Set listener for OAuth actions.
 	useEffect(() => {
-		const authorize = async (event: MessageEvent) => {
-			const authTokens = await receiveAuthToken(event)
-			if (authTokens) setAuthTokens(authTokens)
-			setAuthenticating(false)
-			return true
-		}
-        document.addEventListener("message", (event) => {return authorize(event as MessageEvent)})
-        // authorize()
-		// const receiveAuthToken = async (event: MessageEvent) => {
-		// 	if (!has(event?.data, "location")) {
-		// 		return
-		// 	}
-
-		// 	const { code } = event.data
-		// 	const params: Record<string, string> = {
-		// 		grant_type: "authorization_code",
-		// 		client_id: CLIENT_ID || "",
-		// 		redirect_uri: `${process.env.NEXT_PUBLIC_LAUNCH_HOST}${REDIRECT_URL}` || "",
-		// 		code_verifier: code_verifier,
-		// 		code: code as string,
-		// 	}
-
-		// 	const response = await fetch(`${process.env.NEXT_PUBLIC_AUTH_URL_AWS_NA}/apps-api/apps/token` as string, {
-		// 		method: "POST",
-		// 		headers: { "Content-Type": "application/x-www-form-urlencoded" },
-		// 		body: getUrlEncodedFormData(params),
-		// 	})
-		// 	let data = { ...(await response.json()), code_verifier: code_verifier }
-		// 	setAuthTokens({ accessToken: data.access_token, refreshToken: data.refresh_token })
-		// 	setAuthenticating(false)
-		// }
-		window.addEventListener("message", receiveAuthToken)
-		return () => window.removeEventListener("message", receiveAuthToken)
+        const authorize = async (event: MessageEvent) => {
+            console.log(event)
+            const authTokens = await receiveAuthToken(event.data)
+            console.log(authTokens)
+            if (authTokens) setAuthTokens(authTokens)
+            setAuthenticating(false)
+            return true
+        }
+        window.addEventListener("message", (event) => {
+            return authorize(event as MessageEvent)
+        })
+        return () => window.removeEventListener("message", receiveAuthToken)
 	}, [CLIENT_ID, REDIRECT_URL])
 
 	// Authenticate via OAuth. This will open a new window to authenticate.

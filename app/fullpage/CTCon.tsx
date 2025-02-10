@@ -69,30 +69,6 @@ const CTCon = () => {
 		window.addEventListener("message", (event) => {
 			return authorize(event as MessageEvent)
 		})
-		// const receiveAuthToken = async (event: MessageEvent) => {
-		// 	if (!has(event?.data, "location")) {
-		// 		return
-		// 	}
-
-		// 	const { code } = event.data
-		// 	const params: Record<string, string> = {
-		// 		grant_type: "authorization_code",
-		// 		client_id: CLIENT_ID || "",
-		// 		redirect_uri: `${process.env.NEXT_PUBLIC_LAUNCH_HOST}${REDIRECT_URL}` || "",
-		// 		code_verifier: code_verifier,
-		// 		code: code as string,
-		// 	}
-
-		// 	const response = await fetch(`${process.env.NEXT_PUBLIC_AUTH_URL_AWS_NA}/apps-api/apps/token` as string, {
-		// 		method: "POST",
-		// 		headers: { "Content-Type": "application/x-www-form-urlencoded" },
-		// 		body: getUrlEncodedFormData(params),
-		// 	})
-		// 	let data = { ...(await response.json()), code_verifier: code_verifier }
-		// 	setAuthTokens({ accessToken: data.access_token, refreshToken: data.refresh_token })
-		// 	setAuthenticating(false)
-		// }
-		// window.addEventListener("message", receiveAuthToken)
 		return () => window.removeEventListener("message", receiveAuthToken)
 	}, [CLIENT_ID, REDIRECT_URL])
 
