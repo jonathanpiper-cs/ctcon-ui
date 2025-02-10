@@ -6,6 +6,8 @@ import UiLocation from "@contentstack/app-sdk/dist/src/uiLocation"
 import { IFullPageLocation } from "@contentstack/app-sdk/dist/src/types"
 import { SyntheticEvent } from "react"
 import { Button, Checkbox, Heading } from "@contentstack/venus-components"
+import { transformCT } from "../../lib/helper"
+import { captureRejectionSymbol } from "events"
 require("dotenv").config()
 
 type AuthTokens = {
@@ -14,7 +16,7 @@ type AuthTokens = {
 }
 
 const StackList = (props: any) => {
-	const { stack, appSdk, headers, stackList, setStackList, transformCT, activeSchema } = props
+	const { stack, appSdk, headers, stackList, setStackList, activeSchema, currentSchemaExtensions } = props
 	// const [extensionsByStack, setExtensionsByStack] = useState<any>();
 
 	const getStacks = async () => {
@@ -66,7 +68,7 @@ const StackList = (props: any) => {
 							stackList.map((s: any, key: any) => {
 								return stack !== s.api_key ? (
 									<li className="my-4">
-										<Button label={`${s.name}`} disabled={stack === s.api_key} onClick={() => transformCT(s.api_key)}>
+										<Button label={`${s.name}`} disabled={stack === s.api_key} onClick={() => transformCT(activeSchema, currentSchemaExtensions, stackList, s.api_key)}>
 											{s.name}
 										</Button>
 									</li>

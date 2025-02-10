@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react"
 import StackList from "./StackList"
 import ContentTypeList from "./ContentTypeList"
 import { Button, Heading, cbModal, ModalBody, ModalFooter, ModalHeader, Paragraph } from "@contentstack/venus-components"
+import { transformCT } from "../../lib/helper"
 
 const EXTTYPES: Record<string, string> = {
 	field: "Custom Field",
@@ -47,18 +48,17 @@ const CTConInterface = (props: any) => {
 			let ctExt: Record<string, string[]> = extensionsBySchema.filter((e) => {
 				return e.uid === activeSchema.uid
 			})[0]
-            console.log(activeSchema, ctExt)
 			if (ctExt) {
 				let extTmp = ctExt.extensionsUsed.map((e: any, key: number) => {
 					return currentStackExtensions.filter((cse: any) => {
 						return cse.uid === e
 					})[0]
 				})
-                ctExt = ((extTmp as unknown) as Record<string, string[]>)
+				ctExt = extTmp as unknown as Record<string, string[]>
 			}
 			setCurrentSchemaExtensions(ctExt)
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [activeSchema])
 
 	const ErrorModal = (props: any) => {
@@ -82,60 +82,6 @@ const CTConInterface = (props: any) => {
 		})
 	}
 
-	const transformCT = (key: any) => {
-		let ctTemp = JSON.stringify({
-			title: activeSchema.title,
-			uid: activeSchema.uid,
-			schema: activeSchema.schema,
-		})
-		console.log(currentSchemaExtensions)
-        // Execute this if extensions are found in the target stack.
-		if (currentSchemaExtensions) {
-			currentSchemaExtensions.forEach((cte: any) => {
-				let targetStack = stackList.filter((s: any) => {
-					return s.api_key === key
-				})[0]
-				console.log(targetStack)
-				let targetStackExt = targetStack.extensions.filter((e: any) => {
-					return e.title === cte.title
-				})[0]
-                // This logic is used only when we need to present an error related to missing extensions.
-				// if (!targetStackExt) {
-				// 	openErrorModal({}, `No matching extensions on stack ${targetStack.name}.`)
-				// 	return
-				// }
-				if (targetStackExt) ctTemp = ctTemp.replaceAll(cte.uid, targetStackExt.uid)
-				const file = new File([new Blob([ctTemp])], `${targetStack.name} - ${activeSchema.title}.json`)
-				const link = document.createElement("a")
-				const url = URL.createObjectURL(file)
-
-				link.href = url
-				link.download = file.name
-				document.body.appendChild(link)
-				link.click()
-
-				document.body.removeChild(link)
-				window.URL.revokeObjectURL(url)
-			})
-        // Or this if there are no extensions in the target stack. 
-		} else {
-			let targetStack = stackList.filter((s: any) => {
-				return s.api_key === key
-			})[0]
-			const file = new File([new Blob([ctTemp])], `${targetStack.name} - ${activeSchema.title}.json`)
-			const link = document.createElement("a")
-			const url = URL.createObjectURL(file)
-
-			link.href = url
-			link.download = file.name
-			document.body.appendChild(link)
-			link.click()
-			console.log(ctTemp)
-			document.body.removeChild(link)
-			window.URL.revokeObjectURL(url)
-		}
-	}
-
 	return (
 		<div>
 			<div className="grid grid-cols-2 mt-4">
@@ -157,7 +103,18 @@ const CTConInterface = (props: any) => {
 				<div>
 					{activeSchema.hasOwnProperty("schema") ? (
 						<StackList
-							{...{ stack, location, appSdk, authTokens, headers, changeTargetStackList, stackList, setStackList, transformCT, activeSchema }}
+							{...{
+								stack,
+								location,
+								appSdk,
+								authTokens,
+								headers,
+								changeTargetStackList,
+								stackList,
+								currentSchemaExtensions,
+								setStackList,
+								activeSchema,
+							}}
 						/>
 					) : (
 						<></>
