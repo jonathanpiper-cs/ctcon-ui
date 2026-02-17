@@ -2,7 +2,7 @@
 
 import { Button, Radio } from "@contentstack/venus-components"
 import React, { useEffect, useState } from "react"
-import { EXTTYPES, EXTSTRING, getAllContentTypes, findSchemasWithExtensions, getExtensions } from "../../lib/helper"
+import { EXTSTRING, getAllContentTypes, findSchemasWithExtensions, getExtensions } from "../../lib/helper"
 
 const ContentTypeList = (props: any) => {
 	const { stack, appSdk, setActiveSchema, setExtensionsBySchema, schemas, setSchemas, setCurrentStackExtensions, headers } = props

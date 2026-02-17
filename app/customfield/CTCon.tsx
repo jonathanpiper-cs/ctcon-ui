@@ -10,10 +10,12 @@ import CTConInterface from "./CTConInterface"
 import ContentstackAppSDK from "@contentstack/app-sdk"
 import pkceChallenge from "pkce-challenge"
 let pkceChallengeCode = pkceChallenge()
-import { receiveAuthToken } from "@/lib/helper"
 const code_verifier = pkceChallengeCode.code_verifier
 import { User } from "@contentstack/app-sdk/dist/src/types/user.types"
-import type { AuthTokens } from "@/lib/helper"
+import { getUrlEncodedFormData } from "@/lib/helper"
+import type { AuthTokens } from "@/lib/types"
+
+export const fetchCache = "force-no-store"
 
 const CTCon = () => {
 	const [authenticating, setAuthenticating] = useState<boolean>(false)
@@ -33,8 +35,13 @@ const CTCon = () => {
 		const getSDK = async () => {
 			ContentstackAppSDK.init().then((appSDK) => {
 				setAppSdk(appSDK)
-				const loc = appSDK?.location.FullPage
+				const loc = appSDK?.location.CustomField
 				loc && setLocation(loc)
+                console.log("loc", loc)
+				if (loc) {
+					loc.frame.updateHeight(500)
+					console.log(loc.entry.content_type)
+				}
 				setStack(appSDK.stack._data.api_key)
 				setCurrentUser(appSDK.currentUser)
 			})
@@ -58,18 +65,32 @@ const CTCon = () => {
 
 	// Set listener for OAuth actions.
 	useEffect(() => {
-        const authorize = async (event: MessageEvent) => {
-            console.log(event)
-            const authTokens = await receiveAuthToken(event.data)
-            console.log(authTokens)
-            if (authTokens) setAuthTokens(authTokens)
-            setAuthenticating(false)
-            return true
-        }
-        window.addEventListener("message", (event) => {
-            return authorize(event as MessageEvent)
-        })
-        return () => window.removeEventListener("message", receiveAuthToken)
+		console.log(code_verifier)
+		const receiveAuthToken = async (event: MessageEvent) => {
+			if (!has(event?.data, "location")) {
+				return
+			}
+			const { code } = event.data
+			const params: Record<string, string> = {
+				grant_type: "authorization_code",
+				client_id: CLIENT_ID || "",
+				redirect_uri: `${process.env.NEXT_PUBLIC_LAUNCH_HOST}${REDIRECT_URL}` || "",
+				code_verifier: code_verifier,
+				code: code as string,
+			}
+			const response = await fetch(`${process.env.NEXT_PUBLIC_AUTH_URL_AWS_NA}/apps-api/apps/token` as string, {
+				method: "POST",
+				headers: { "Content-Type": "application/x-www-form-urlencoded" },
+				body: getUrlEncodedFormData(params),
+			})
+			let data = { ...(await response.json()), code_verifier: code_verifier }
+			setAuthTokens({ accessToken: data.access_token, refreshToken: data.refresh_token })
+			setAuthenticating(false)
+		}
+		window.addEventListener("message", receiveAuthToken)
+		return () => {
+			window.removeEventListener("message", receiveAuthToken)
+		}
 	}, [CLIENT_ID, REDIRECT_URL])
 
 	// Authenticate via OAuth. This will open a new window to authenticate.
@@ -83,13 +104,7 @@ const CTCon = () => {
 	return (
 		<div className="m-4">
 			<div className="mb-4">
-				<Heading tagName="h1" text="CTCon"></Heading>
-				<Heading tagName="h3" text="Tool for transforming app uids across content types for multi-stack implementations."></Heading>
-				<p>
-					This tool leverages Contentstack&rsquo;s App SDK, Oauth, and Content Management API (CMA) endpoints. Note that it will require multiple
-					calls to the CMA to gather information about your organization&rsquo;s stacks. For typical customer implementations, this shouldn&rsquo;t be
-					an issue. To start, please click &lsquo;Authorize&rsquo;.
-				</p>
+				<Heading tagName="h3" text="CTCon"></Heading>
 			</div>
 			{currentUser ? (
 				<div className="mb-4">

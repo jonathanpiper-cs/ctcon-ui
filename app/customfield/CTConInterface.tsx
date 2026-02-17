@@ -5,17 +5,8 @@ import StackList from "./StackList"
 import ContentTypeList from "./ContentTypeList"
 import { Button, Heading, cbModal, ModalBody, ModalFooter, ModalHeader, Paragraph } from "@contentstack/venus-components"
 import { transformCT } from "../../lib/helper"
-
-const EXTTYPES: Record<string, string> = {
-	field: "Custom Field",
-	rte_plugin: "RTE Plugin",
-}
-const EXTSTRING = '"extension_uid"'
-type VerboseExtension = {
-	title: string
-	type: string
-	uid: string
-}
+import { EXTSTRING, EXTTYPES } from "../../lib/const"
+export const fetchCache = "force-no-store"
 
 const CTConInterface = (props: any) => {
 	const { stack, location, appSdk, authTokens } = props
@@ -86,39 +77,20 @@ const CTConInterface = (props: any) => {
 		<div>
 			<div className="grid grid-cols-2 mt-4">
 				<div>
-					<ContentTypeList
+					<StackList
 						{...{
 							stack,
+							location,
 							appSdk,
 							authTokens,
-							setActiveSchema,
-							setExtensionsBySchema,
-							schemas,
-							setSchemas,
-							setCurrentStackExtensions,
 							headers,
+							changeTargetStackList,
+							stackList,
+							currentSchemaExtensions,
+							setStackList,
+							activeSchema,
 						}}
 					/>
-				</div>
-				<div>
-					{activeSchema.hasOwnProperty("schema") ? (
-						<StackList
-							{...{
-								stack,
-								location,
-								appSdk,
-								authTokens,
-								headers,
-								changeTargetStackList,
-								stackList,
-								currentSchemaExtensions,
-								setStackList,
-								activeSchema,
-							}}
-						/>
-					) : (
-						<></>
-					)}
 				</div>
 			</div>
 			<div className="my-4">

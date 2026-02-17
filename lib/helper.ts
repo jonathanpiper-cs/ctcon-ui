@@ -1,19 +1,9 @@
 import { has } from "lodash"
 import { CLIENT_ID, REDIRECT_URL } from "./const"
 import pkceChallenge from "pkce-challenge"
-let pkceChallengeCode = pkceChallenge()
-const code_verifier = pkceChallengeCode.code_verifier
+import type { AuthTokens } from "./types"
 
-export const EXTTYPES: Record<string, string> = {
-	field: "Custom Field",
-	rte_plugin: "RTE Plugin",
-}
-
-// Type definition for AuthTokens
-export type AuthTokens = {
-	accessToken?: string
-	refreshToken?: string
-}
+export const fetchCache = "force-no-store"
 
 export const EXTSTRING = '"extension_uid"'
 
@@ -121,12 +111,10 @@ export const getExtensions = async (headers: any, stack: any) => {
 	// setCurrentStackExtensions(req.extensions)
 }
 
-export const receiveAuthToken = async (event: MessageEvent) => {
-	if (!has(event?.data, "location")) {
+export const receiveAuthToken = async (code: string, location: string, code_verifier: string) => {
+	if (!location) {
 		return
 	}
-
-	const { code } = event.data
 	const params: Record<string, string> = {
 		grant_type: "authorization_code",
 		client_id: CLIENT_ID || "",
@@ -141,7 +129,9 @@ export const receiveAuthToken = async (event: MessageEvent) => {
 		body: getUrlEncodedFormData(params),
 	})
 	let data = { ...(await response.json()), code_verifier: code_verifier }
-	return { accessToken: data.access_token, refreshToken: data.refresh_token } as AuthTokens
+	console.log(data)
+	// return { accessToken: data.access_token, refreshToken: data.refresh_token } as AuthTokens
+    return data
 }
 
 export const getUrlEncodedFormData = (params: Record<string, string>) => {
@@ -153,3 +143,5 @@ export const getUrlEncodedFormData = (params: Record<string, string>) => {
 	}
 	return formBody.join("&")
 }
+
+export const pause = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
